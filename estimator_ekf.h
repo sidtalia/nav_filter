@@ -405,7 +405,7 @@ public:
 		{
 			_ekf->statesInitialised = false;
 		}
-		if(!_ekf->statesInitialised and (_ekf->GPSstatus >= 3) and _ekf->gpshAcc < 2.0 and _ekf->pDOP < 1.5)// if GPS is available
+		if(!_ekf->statesInitialised and (_ekf->GPSstatus >= 3) and _ekf->gpshAcc < 2.0 and _ekf->pDOP < 2.0)// if GPS is available
 		{ 
 			_ekf->InitialiseFilter(_ekf->velNED, _ekf->gpsLat, _ekf->gpsLon, _ekf->gpsHgt, 0.0f); // last thing is declination
 		} 

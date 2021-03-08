@@ -1160,8 +1160,8 @@ void AttPosEKF::FuseVelposNED()
         observation[5] = -(hgtMea);
 
         // Estimate the GPS Velocity, GPS horiz position and height measurement variances.
-        velErr = 0.2f*accNavMag; // additional error in GPS velocities caused by manoeuvring
-        posErr = 0.2f*accNavMag; // additional error in GPS position caused by manoeuvring
+        velErr = 0.02f*accNavMag; // additional error in GPS velocities caused by manoeuvring
+        posErr = 0.02f*accNavMag; // additional error in GPS position caused by manoeuvring
         R_OBS[0] = sq(gpssAcc) + sq(velErr); //TODO: change this to work with hAcc, vAcc, sAcc
         R_OBS[1] = R_OBS[0];
         R_OBS[2] = sq(gpssAcc) + sq(velErr);

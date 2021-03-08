@@ -134,6 +134,7 @@ public:
     float statesAtRngTime[EKF_STATE_ESTIMATES]; // filter states at the effective measurement time
     float statesAtFlowTime[EKF_STATE_ESTIMATES]; // States at the effective optical flow measurement time
     float statesAtRotTime[EKF_STATE_ESTIMATES]; //CHANGED: Used for centrifugal force compensation.
+    float statesAtOdomTime[EKF_STATE_ESTIMATES];
     float omegaAcrossFlowTime[3]; // angular rates at the effective optical flow measurement time
 
     Vector3f correctedDelAng; // delta angles about the xyz body axes corrected for errors (rad)
@@ -216,6 +217,14 @@ public:
     float BaroSigma;
     float R_hgt;
 
+    // odometry related variables.
+    Vector3f body_Odom_offset;
+    Vector3f body_Odom_vel;
+    float body_Odom_velErr;
+    float varInnovBodyVel[3];
+    float innovBodyVel[3];
+    float bodyVelTestRatio[3];
+
     bool statesInitialised;
 
     bool fuseVelData; // this boolean causes the posNE and velNED obs to be fused
@@ -285,7 +294,7 @@ public:
 
     void FuseOptFlow();
 
-    // void FuseBodyVel();
+    void FuseBodyVel(byte obsIndex);
 
     /**
     * @brief

@@ -14,6 +14,7 @@ private:
 	uint32_t msecMagDelay;
 	uint32_t msecTasDelay ;
 	uint32_t msecOptFlowDelay;
+	uint32_t msecOdomDelay;
 
 	// IMU input data variables
 	float imuIn;
@@ -58,6 +59,8 @@ private:
 	bool new_ASData;
 	bool newDataGps;
 	bool newOptFlowData;
+
+	bool newDataOdom;
 
 	float onboardTimestamp;
 	uint32_t onboardMsec;
@@ -116,6 +119,7 @@ public:
 	float tilt_margin;
 	bool constrain_AG;
 	byte mag_number;
+	byte odom_number;
 	Vector3f bodyVelPred; // this is the body frame velocity vector
 	Vector3f Accel_compensation;
 	estimator_ekf()
@@ -128,6 +132,7 @@ public:
 		msecMagDelay = 25;
 		msecTasDelay = 100;
 		msecOptFlowDelay = 0;
+		msecOdomDelay = 20; // 20 ms assumed delay
 
 		// IMU input data variables
 		IMUmsec = 0;
@@ -180,6 +185,7 @@ public:
 		tilt_margin = 0;
 		constrain_AG = false;
 		mag_number = 0;
+		odom_number = 0;
 	}
 
 	void SelectFlowFusion()
@@ -366,7 +372,7 @@ public:
 
 	void SelectMagFusion()
 	{
-		if(newDataGps or newAdsData)
+		if(newDataGps or newAdsData or newFlowData or newDataOdom)
 		{
 			newDataMag = false;
 			return; // don't fuse mag data on the cycle where you have received anything else
@@ -396,6 +402,26 @@ public:
 		else
 		{
 		    _ekf->fuseMagData = false;
+		}
+	}
+
+	void SelectOdomFusion()
+	{
+		// TODO: implement something like this for compass as well.
+		if(newDataGps or newAdsData or newFlowData)
+		{
+			return; // don't fuse mag data on the cycle where you have received anything else
+		}
+		if (newDataOdom)
+		{
+		    _ekf->RecallStates(_ekf->statesAtOdomTime, (IMUmsec - msecOdomDelay)); // Assume 50 msec avg delay for magnetometer data
+		    _ekf->FuseBodyVel(odom_number%3); // %3 is for safety
+		    odom_number += 1;
+		    if(odom_number==3)
+		    {
+		    	odom_number = 0;
+		    	newDataOdom = false;
+		    }
 		}
 	}
 
@@ -459,9 +485,12 @@ public:
 		    //Airspeed fusion 
 		    SelectAspdFusion();
 		    // Fuse Optical Flow data
-			SelectFlowFusion();		
+			SelectFlowFusion();
+			// Fuse Body Odometry
+			SelectOdomFusion();		
 		    // Fuse GPS Measurements
 			SelectPVFusion();
+
 			get_centrifugal_correction(); // this is for external stuff-> only calculates accel compensation and body frame velocity (position is already world frame and accel is available in body frame already so)
 		}
 		else
@@ -493,6 +522,15 @@ public:
 			_ekf->dVelIMU.y = _ekf->ConstrainFloat(_ekf->dVelIMU.y, -2*_ekf->dAngIMU.z, 2*_ekf->dAngIMU.z);
 			_ekf->dVelIMU.z = _ekf->ConstrainFloat(_ekf->dVelIMU.z, -2*_ekf->dAngIMU.y, 2*_ekf->dAngIMU.y);
 		}
+	}
+
+	void setOdomData(float bodyVel[3], float velErr, bool new_data)
+	{
+		_ekf->body_Odom_vel.x = bodyVel[0];
+		_ekf->body_Odom_vel.y = bodyVel[1];
+		_ekf->body_Odom_vel.z = bodyVel[2];
+		_ekf->body_Odom_velErr = velErr;
+		newDataOdom = new_data;
 	}
 
 	void get_centrifugal_correction()

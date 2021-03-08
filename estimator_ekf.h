@@ -407,7 +407,6 @@ public:
 
 	void SelectOdomFusion()
 	{
-		// TODO: implement something like this for compass as well.
 		if(newDataGps or newAdsData or newFlowData)
 		{
 			return; // don't fuse mag data on the cycle where you have received anything else
@@ -526,6 +525,10 @@ public:
 
 	void setOdomData(float bodyVel[3], float velErr, bool new_data)
 	{
+		if(odom_number > 0) //wait for all the axes to be fused in.
+		{
+			return;
+		}
 		_ekf->body_Odom_vel.x = bodyVel[0];
 		_ekf->body_Odom_vel.y = bodyVel[1];
 		_ekf->body_Odom_vel.z = bodyVel[2];

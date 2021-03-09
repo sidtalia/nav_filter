@@ -23,7 +23,7 @@ private:
 	float IMUtimestamp;
 	uint32_t IMUmsec;
 	uint64_t IMUusec;
-
+	float cov_pred_dt;
 	// Magnetometer input data variables
 	float magIn;
 	float tempMag[8];
@@ -139,6 +139,7 @@ public:
 		IMUusec = 0;
 		lastAngRate.zero();
 		lastAccel.zero();
+		cov_pred_dt = 0;
 
 		// Magnetometer input data variables
 		MAGtimestamp = 0;
@@ -469,12 +470,14 @@ public:
 		    // sum delta angles and time used by covariance prediction
 		    _ekf->summedDelAng = _ekf->summedDelAng + _ekf->correctedDelAng;
 		    _ekf->summedDelVel = _ekf->summedDelVel + _ekf->dVelIMU;
+		    cov_pred_dt += _ekf->dtIMU;
 		    // perform a covariance prediction
 		    if(!(newDataGps) and !(newAdsData) and !(newDataMag) and !(newFlowData) and !(newDistData))
 		    {
-				_ekf->CovariancePrediction(_ekf->dtIMU);
+				_ekf->CovariancePrediction(cov_pred_dt);
 				_ekf->summedDelAng.zero();
 				_ekf->summedDelVel.zero();
+				cov_pred_dt = 0;
 		    }
 		    // Set global time stamp used by EKF processes
 		    _ekf->globalTimeStamp_ms = IMUmsec;
@@ -486,7 +489,7 @@ public:
 		    // Fuse Optical Flow data
 			SelectFlowFusion();
 			// Fuse Body Odometry
-			SelectOdomFusion();		
+			// SelectOdomFusion();		
 		    // Fuse GPS Measurements
 			SelectPVFusion();
 

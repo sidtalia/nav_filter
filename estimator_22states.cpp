@@ -1690,7 +1690,7 @@ void AttPosEKF::FuseMagnetometer()
 
         }
         // Check the innovation for consistency and don't fuse if > 5Sigma
-        if ((innovMag[obsIndex]*innovMag[obsIndex]/varInnovMag[obsIndex]) < 25.0f)
+        if ((innovMag[obsIndex]*innovMag[obsIndex]/varInnovMag[obsIndex]) < 1.0f)
         {   
             // correct the state vector
             for (uint8_t j= 0; j < EKF_STATE_ESTIMATES; j++)

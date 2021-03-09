@@ -1253,8 +1253,8 @@ void AttPosEKF::FuseVelposNED()
 
                 if (current_ekf_state.posTimeout || ((sq(posInnov[0]) + sq(posInnov[1])) > sq(float(gpsGlitchRadius))))
                 {
-                    gpsPosGlitchOffsetNE.x += posInnov[0];
-                    gpsPosGlitchOffsetNE.y += posInnov[1];
+                    // gpsPosGlitchOffsetNE.x += posInnov[0];
+                    // gpsPosGlitchOffsetNE.y += posInnov[1];
 
                     // limit the radius of the offset and decay the offset to zero radially
                     decayGpsOffset();
@@ -2560,17 +2560,18 @@ void AttPosEKF::FuseBodyVel(byte obsIndex)
         innovBodyVel[0] = bodyVelPred.x - body_Odom_vel.x;
 
         // calculate Kalman gains for X-axis observation
-        Kfusion[0] = t77*(t29+P[0][5]*t4+P[0][4]*t9-P[0][6]*t11+P[0][1]*t18-P[0][2]*t21+P[0][3]*t24);
-        Kfusion[1] = t77*(t30+P[1][5]*t4+P[1][4]*t9+P[1][0]*t14-P[1][6]*t11-P[1][2]*t21+P[1][3]*t24);
-        Kfusion[2] = t77*(-t78+P[2][5]*t4+P[2][4]*t9+P[2][0]*t14-P[2][6]*t11+P[2][1]*t18+P[2][3]*t24);
-        Kfusion[3] = t77*(t66+P[3][5]*t4+P[3][4]*t9+P[3][0]*t14-P[3][6]*t11+P[3][1]*t18-P[3][2]*t21);
+        // Kfusion[0] = t77*(t29+P[0][5]*t4+P[0][4]*t9-P[0][6]*t11+P[0][1]*t18-P[0][2]*t21+P[0][3]*t24);
+        // Kfusion[1] = t77*(t30+P[1][5]*t4+P[1][4]*t9+P[1][0]*t14-P[1][6]*t11-P[1][2]*t21+P[1][3]*t24);
+        // Kfusion[2] = t77*(-t78+P[2][5]*t4+P[2][4]*t9+P[2][0]*t14-P[2][6]*t11+P[2][1]*t18+P[2][3]*t24);
+        // Kfusion[3] = t77*(t66+P[3][5]*t4+P[3][4]*t9+P[3][0]*t14-P[3][6]*t11+P[3][1]*t18-P[3][2]*t21);
         Kfusion[4] = t77*(t69+P[4][5]*t4+P[4][0]*t14-P[4][6]*t11+P[4][1]*t18-P[4][2]*t21+P[4][3]*t24);
         Kfusion[5] = t77*(t32+P[5][4]*t9+P[5][0]*t14-P[5][6]*t11+P[5][1]*t18-P[5][2]*t21+P[5][3]*t24);
         Kfusion[6] = t77*(-t81+P[6][5]*t4+P[6][4]*t9+P[6][0]*t14+P[6][1]*t18-P[6][2]*t21+P[6][3]*t24);
-        Kfusion[7] = t77*(P[7][5]*t4+P[7][4]*t9+P[7][0]*t14-P[7][6]*t11+P[7][1]*t18-P[7][2]*t21+P[7][3]*t24);
-        Kfusion[8] = t77*(P[8][5]*t4+P[8][4]*t9+P[8][0]*t14-P[8][6]*t11+P[8][1]*t18-P[8][2]*t21+P[8][3]*t24);
-        Kfusion[9] = t77*(P[9][5]*t4+P[9][4]*t9+P[9][0]*t14-P[9][6]*t11+P[9][1]*t18-P[9][2]*t21+P[9][3]*t24);
-
+        // Kfusion[7] = t77*(P[7][5]*t4+P[7][4]*t9+P[7][0]*t14-P[7][6]*t11+P[7][1]*t18-P[7][2]*t21+P[7][3]*t24);
+        // Kfusion[8] = t77*(P[8][5]*t4+P[8][4]*t9+P[8][0]*t14-P[8][6]*t11+P[8][1]*t18-P[8][2]*t21+P[8][3]*t24);
+        // Kfusion[9] = t77*(P[9][5]*t4+P[9][4]*t9+P[9][0]*t14-P[9][6]*t11+P[9][1]*t18-P[9][2]*t21+P[9][3]*t24);
+        memset(&Kfusion[0],0,16);
+        memset(&Kfusion[7],0,12);
         memset(&Kfusion[10],0, 48);
 
     } 
@@ -2697,17 +2698,18 @@ void AttPosEKF::FuseBodyVel(byte obsIndex)
         innovBodyVel[1] = bodyVelPred.y - body_Odom_vel.y;
 
         // calculate Kalman gains for Y-axis observation
-        Kfusion[0] = t77*(t29-P[0][4]*t3+P[0][5]*t8+P[0][6]*t12+P[0][1]*t18+P[0][2]*t22-P[0][3]*t25);
-        Kfusion[1] = t77*(t30-P[1][4]*t3+P[1][5]*t8+P[1][0]*t15+P[1][6]*t12+P[1][2]*t22-P[1][3]*t25);
-        Kfusion[2] = t77*(t60-P[2][4]*t3+P[2][5]*t8+P[2][0]*t15+P[2][6]*t12+P[2][1]*t18-P[2][3]*t25);
-        Kfusion[3] = t77*(-t90-P[3][4]*t3+P[3][5]*t8+P[3][0]*t15+P[3][6]*t12+P[3][1]*t18+P[3][2]*t22);
+        // Kfusion[0] = t77*(t29-P[0][4]*t3+P[0][5]*t8+P[0][6]*t12+P[0][1]*t18+P[0][2]*t22-P[0][3]*t25);
+        // Kfusion[1] = t77*(t30-P[1][4]*t3+P[1][5]*t8+P[1][0]*t15+P[1][6]*t12+P[1][2]*t22-P[1][3]*t25);
+        // Kfusion[2] = t77*(t60-P[2][4]*t3+P[2][5]*t8+P[2][0]*t15+P[2][6]*t12+P[2][1]*t18-P[2][3]*t25);
+        // Kfusion[3] = t77*(-t90-P[3][4]*t3+P[3][5]*t8+P[3][0]*t15+P[3][6]*t12+P[3][1]*t18+P[3][2]*t22);
         Kfusion[4] = t77*(-t78+P[4][5]*t8+P[4][0]*t15+P[4][6]*t12+P[4][1]*t18+P[4][2]*t22-P[4][3]*t25);
         Kfusion[5] = t77*(t69-P[5][4]*t3+P[5][0]*t15+P[5][6]*t12+P[5][1]*t18+P[5][2]*t22-P[5][3]*t25);
         Kfusion[6] = t77*(t38-P[6][4]*t3+P[6][5]*t8+P[6][0]*t15+P[6][1]*t18+P[6][2]*t22-P[6][3]*t25);
-        Kfusion[7] = t77*(-P[7][4]*t3+P[7][5]*t8+P[7][0]*t15+P[7][6]*t12+P[7][1]*t18+P[7][2]*t22-P[7][3]*t25);
-        Kfusion[8] = t77*(-P[8][4]*t3+P[8][5]*t8+P[8][0]*t15+P[8][6]*t12+P[8][1]*t18+P[8][2]*t22-P[8][3]*t25);
-        Kfusion[9] = t77*(-P[9][4]*t3+P[9][5]*t8+P[9][0]*t15+P[9][6]*t12+P[9][1]*t18+P[9][2]*t22-P[9][3]*t25);
-
+        // Kfusion[7] = t77*(-P[7][4]*t3+P[7][5]*t8+P[7][0]*t15+P[7][6]*t12+P[7][1]*t18+P[7][2]*t22-P[7][3]*t25);
+        // Kfusion[8] = t77*(-P[8][4]*t3+P[8][5]*t8+P[8][0]*t15+P[8][6]*t12+P[8][1]*t18+P[8][2]*t22-P[8][3]*t25);
+        // Kfusion[9] = t77*(-P[9][4]*t3+P[9][5]*t8+P[9][0]*t15+P[9][6]*t12+P[9][1]*t18+P[9][2]*t22-P[9][3]*t25);
+        memset(&Kfusion[0],0,16);
+        memset(&Kfusion[7],0,12);
         memset(&Kfusion[10],0, 48);
 
     } 
@@ -2834,17 +2836,18 @@ void AttPosEKF::FuseBodyVel(byte obsIndex)
         innovBodyVel[2] = bodyVelPred.z - body_Odom_vel.z;
 
         // calculate Kalman gains for X-axis observation
-        Kfusion[0] = t77*(t29+P[0][4]*t4+P[0][6]*t9-P[0][5]*t11-P[0][1]*t17+P[0][2]*t20+P[0][3]*t24);
-        Kfusion[1] = t77*(P[1][4]*t4+P[1][0]*t14+P[1][6]*t9-P[1][5]*t11-P[1][1]*t17+P[1][2]*t20+P[1][3]*t24);
-        Kfusion[2] = t77*(t58+P[2][4]*t4+P[2][0]*t14+P[2][6]*t9-P[2][5]*t11-P[2][1]*t17+P[2][3]*t24);
-        Kfusion[3] = t77*(t66+P[3][4]*t4+P[3][0]*t14+P[3][6]*t9-P[3][5]*t11-P[3][1]*t17+P[3][2]*t20);
+        // Kfusion[0] = t77*(t29+P[0][4]*t4+P[0][6]*t9-P[0][5]*t11-P[0][1]*t17+P[0][2]*t20+P[0][3]*t24);
+        // Kfusion[1] = t77*(P[1][4]*t4+P[1][0]*t14+P[1][6]*t9-P[1][5]*t11-P[1][1]*t17+P[1][2]*t20+P[1][3]*t24);
+        // Kfusion[2] = t77*(t58+P[2][4]*t4+P[2][0]*t14+P[2][6]*t9-P[2][5]*t11-P[2][1]*t17+P[2][3]*t24);
+        // Kfusion[3] = t77*(t66+P[3][4]*t4+P[3][0]*t14+P[3][6]*t9-P[3][5]*t11-P[3][1]*t17+P[3][2]*t20);
         Kfusion[4] = t77*(t31+P[4][0]*t14+P[4][6]*t9-P[4][5]*t11-P[4][1]*t17+P[4][2]*t20+P[4][3]*t24);
         Kfusion[5] = t77*(-t80+P[5][4]*t4+P[5][0]*t14+P[5][6]*t9-P[5][1]*t17+P[5][2]*t20+P[5][3]*t24);
         Kfusion[6] = t77*(t69+P[6][4]*t4+P[6][0]*t14-P[6][5]*t11-P[6][1]*t17+P[6][2]*t20+P[6][3]*t24);
-        Kfusion[7] = t77*(P[7][4]*t4+P[7][0]*t14+P[7][6]*t9-P[7][5]*t11-P[7][1]*t17+P[7][2]*t20+P[7][3]*t24);
-        Kfusion[8] = t77*(P[8][4]*t4+P[8][0]*t14+P[8][6]*t9-P[8][5]*t11-P[8][1]*t17+P[8][2]*t20+P[8][3]*t24);
-        Kfusion[9] = t77*(P[9][4]*t4+P[9][0]*t14+P[9][6]*t9-P[9][5]*t11-P[9][1]*t17+P[9][2]*t20+P[9][3]*t24);
-
+        // Kfusion[7] = t77*(P[7][4]*t4+P[7][0]*t14+P[7][6]*t9-P[7][5]*t11-P[7][1]*t17+P[7][2]*t20+P[7][3]*t24);
+        // Kfusion[8] = t77*(P[8][4]*t4+P[8][0]*t14+P[8][6]*t9-P[8][5]*t11-P[8][1]*t17+P[8][2]*t20+P[8][3]*t24);
+        // Kfusion[9] = t77*(P[9][4]*t4+P[9][0]*t14+P[9][6]*t9-P[9][5]*t11-P[9][1]*t17+P[9][2]*t20+P[9][3]*t24);
+        memset(&Kfusion[0],0,16);
+        memset(&Kfusion[7],0,12);
         memset(&Kfusion[10],0, 48);
 
     }

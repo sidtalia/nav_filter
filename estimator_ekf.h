@@ -408,7 +408,7 @@ public:
 
 	void SelectOdomFusion()
 	{
-		if(newDataGps or newAdsData or newFlowData)
+		if(newDataGps or newAdsData or newFlowData or newDataMag)
 		{
 			return; // don't fuse mag data on the cycle where you have received anything else
 		}
@@ -434,6 +434,7 @@ public:
 		if(!_ekf->statesInitialised and (_ekf->GPSstatus >= 3) and _ekf->gpshAcc < 2.5 and _ekf->pDOP <= 2.5)// if GPS is available
 		{ 
 			_ekf->InitialiseFilter(_ekf->velNED, _ekf->gpsLat, _ekf->gpsLon, _ekf->gpsHgt, 0.0f); // last thing is declination
+			tilt_margin = 0;
 		} 
 		else if (_ekf->statesInitialised) 
 		{
@@ -489,7 +490,7 @@ public:
 		    // Fuse Optical Flow data
 			SelectFlowFusion();
 			// Fuse Body Odometry
-			// SelectOdomFusion();		
+			SelectOdomFusion();		
 		    // Fuse GPS Measurements
 			SelectPVFusion();
 
@@ -521,8 +522,11 @@ public:
 		// test these constraint methods; I have a feeling this will backfire because it may just adjust the gyro biases. 
 		if(constrain_AG) //constrain sensor error growth on GPS loss; this way it doesn't backfire because the biases aren't being corrected no more son.
 		{
-			_ekf->dVelIMU.y = _ekf->ConstrainFloat(_ekf->dVelIMU.y, -2*_ekf->dAngIMU.z, 2*_ekf->dAngIMU.z);
-			_ekf->dVelIMU.z = _ekf->ConstrainFloat(_ekf->dVelIMU.z, -2*_ekf->dAngIMU.y, 2*_ekf->dAngIMU.y);
+			Vector3f dOmega = _ekf->angRate - lastAngRate;
+			Vector3f _gravityNED(0.0f, 0.0f, GRAVITY_MSS);
+			Vector3f gravity_comp = _ekf->Tnb*_gravityNED*delta_T;
+			_ekf->dVelIMU.y = _ekf->ConstrainFloat(_ekf->dVelIMU.y + gravity_comp.y, -2*dOmega.z, 2*dOmega.z) - gravity_comp.y;
+			_ekf->dVelIMU.z = _ekf->ConstrainFloat(_ekf->dVelIMU.z + gravity_comp.z, -2*dOmega.y, 2*dOmega.y) - gravity_comp.z;
 		}
 	}
 

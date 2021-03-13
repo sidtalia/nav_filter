@@ -530,7 +530,7 @@ public:
 		}
 	}
 
-	void setOdomData(float bodyVel[3], float velErr, bool new_data)
+	void setOdomData(float bodyVel[4], bool new_data)
 	{
 		if(odom_number > 0) //wait for all the axes to be fused in.
 		{
@@ -539,7 +539,7 @@ public:
 		_ekf->body_Odom_vel.x = bodyVel[0];
 		_ekf->body_Odom_vel.y = bodyVel[1];
 		_ekf->body_Odom_vel.z = bodyVel[2];
-		_ekf->body_Odom_velErr = velErr;
+		_ekf->body_Odom_velErr = bodyVel[3];
 		newDataOdom = new_data;
 	}
 

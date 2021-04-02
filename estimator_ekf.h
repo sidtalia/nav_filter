@@ -536,6 +536,10 @@ public:
 		{
 			return;
 		}
+		for(int i=0;i<3;i++)
+		{
+			bodyVel[i] = fabs(bodyVel[i]) < 0.05 ? 0: bodyVel[i];
+		}
 		_ekf->body_Odom_vel.x = bodyVel[0];
 		_ekf->body_Odom_vel.y = bodyVel[1];
 		_ekf->body_Odom_vel.z = bodyVel[2];
@@ -595,9 +599,9 @@ public:
 		_ekf->velNED[1] = velNED[1];
 		_ekf->velNED[2] = velNED[2];
 		_ekf->gpsmagDec = magDec;
-		_ekf->gpshAcc = hAcc;
-		_ekf->gpsvAcc = vAcc;
-		_ekf->gpssAcc = sAcc;
+		_ekf->gpshAcc = _ekf->ConstrainFloat(hAcc,0.5,20);
+		_ekf->gpsvAcc = _ekf->ConstrainFloat(vAcc,0.1,20);;
+		_ekf->gpssAcc = _ekf->ConstrainFloat(sAcc,0.5,20);;
 		_ekf->gpsmagAcc = magAcc;
 		_ekf->pDOP = pDOP;
 		newDataGps = new_data;

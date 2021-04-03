@@ -543,7 +543,7 @@ public:
 		_ekf->body_Odom_vel.x = bodyVel[0];
 		_ekf->body_Odom_vel.y = bodyVel[1];
 		_ekf->body_Odom_vel.z = bodyVel[2];
-		_ekf->body_Odom_velErr = bodyVel[3];
+		_ekf->body_Odom_velErr = bodyVel[3]*10; // need to scale it, otherwise it breaks the system
 		newDataOdom = new_data;
 	}
 
@@ -600,8 +600,8 @@ public:
 		_ekf->velNED[2] = velNED[2];
 		_ekf->gpsmagDec = magDec;
 		_ekf->gpshAcc = _ekf->ConstrainFloat(hAcc,0.5,20);
-		_ekf->gpsvAcc = _ekf->ConstrainFloat(vAcc,0.1,20);;
-		_ekf->gpssAcc = _ekf->ConstrainFloat(sAcc,0.5,20);;
+		_ekf->gpsvAcc = _ekf->ConstrainFloat(vAcc,0.1,20);
+		_ekf->gpssAcc = _ekf->ConstrainFloat(sAcc,0.5,20);
 		_ekf->gpsmagAcc = magAcc;
 		_ekf->pDOP = pDOP;
 		newDataGps = new_data;

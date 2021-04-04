@@ -543,7 +543,7 @@ public:
 		_ekf->body_Odom_vel.x = bodyVel[0];
 		_ekf->body_Odom_vel.y = bodyVel[1];
 		_ekf->body_Odom_vel.z = bodyVel[2];
-		_ekf->body_Odom_velErr = bodyVel[3]*10; // need to scale it, otherwise it breaks the system
+		_ekf->body_Odom_velErr = _ekf->ConstrainFloat(bodyVel[3]*10,0.9f,100.0f); // need to scale it, otherwise it breaks the system
 		newDataOdom = new_data;
 	}
 

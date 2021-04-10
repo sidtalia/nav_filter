@@ -1243,14 +1243,12 @@ void AttPosEKF::FuseVelposNED()
             float maxPosInnov2 = sq(float(gpsPosInnovNSTD) * 2.0f *gpshAcc + 0.005f * accelScale * float(gpsGlitchAccel) * sq(0.001f * float(millis() - current_ekf_state.posFailTime)));
             float posTestRatio = (sq(posInnov[0]) + sq(posInnov[1])) / maxPosInnov2;
             current_ekf_state.posHealth = (posTestRatio < 1.0f);
-
             current_ekf_state.posFailTime = millis();
 
             if (current_ekf_state.posHealth || current_ekf_state.posTimeout)
             {
                 current_ekf_state.posHealth = true;
-                current_ekf_state.posFailTime = millis();
-
+                
                 if (current_ekf_state.posTimeout || ((sq(posInnov[0]) + sq(posInnov[1])) > sq(float(gpsGlitchRadius))))
                 {
                     // gpsPosGlitchOffsetNE.x += posInnov[0];
@@ -1261,6 +1259,8 @@ void AttPosEKF::FuseVelposNED()
 
                     // reset the position to the current GPS position which will include the glitch correction offset
                     staticMode = false;
+                    float delta_pos[3] = {-posInnov[0],-posInnov[1],0};
+                    calcLLH(delta_pos, latRef, lonRef, hgtRef, latRef, lonRef, hgtRef); // reset lat-lon ref points
                     ResetPosition();
                     // do not fuse position data on this timestep
                     fusePosData = false;

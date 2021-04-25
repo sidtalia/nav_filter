@@ -1,8 +1,6 @@
 #pragma once
 #include "estimator_22states.h"
-
-
-#define MAG_SCALING float(1/49.0) // strength of earth's mag. field w/o interference.
+#include "WMT.h"
 
 class estimator_ekf
 {
@@ -112,6 +110,7 @@ private:
 	float gpsCourse;
 	float gpsVelD;
 	int gps_status;
+	double _lat,_lon;
 
 public:
 	AttPosEKF *_ekf;
@@ -122,6 +121,7 @@ public:
 	byte odom_number;
 	Vector3f bodyVelPred; // this is the body frame velocity vector
 	Vector3f Accel_compensation;
+	float declination, MAG_SCALING;
 	estimator_ekf()
 	{
 		// Estimated time delays (msec)
@@ -187,6 +187,9 @@ public:
 		constrain_AG = false;
 		mag_number = 0;
 		odom_number = 0;
+
+		declination = 0.0f;
+		MAG_SCALING = 1/49.0f; //default for Delhi.
 	}
 
 	void SelectFlowFusion()
@@ -433,7 +436,9 @@ public:
 		}
 		if(!_ekf->statesInitialised and (_ekf->GPSstatus >= 3) and _ekf->gpshAcc < 2.5 and _ekf->pDOP <= 2.5)// if GPS is available
 		{ 
-			_ekf->InitialiseFilter(_ekf->velNED, _ekf->gpsLat, _ekf->gpsLon, _ekf->gpsHgt, 0.0f); // last thing is declination
+			declination = get_mag_declination_radians(float(_lat), float(_lon));
+			MAG_SCALING = 1/get_mag_strength_uTesla(float(_lat), float(_lon));
+			_ekf->InitialiseFilter(_ekf->velNED, _ekf->gpsLat, _ekf->gpsLon, _ekf->gpsHgt, declination); // last thing is declination
 			tilt_margin = 0;
 		} 
 		else if (_ekf->statesInitialised) 
@@ -452,7 +457,7 @@ public:
 			if((fabs(rpy[0])>tilt_margin or fabs(rpy[1])>tilt_margin or fabs(rpy[2])>tilt_margin) and _ekf->new_AHRS_Data and _ekf->accNavMag < 2.0f ) // this needs an acceleration related argument
 			{
 				_ekf->staticMode = false;
-				_ekf->InitialiseFilter(_ekf->velNED, _ekf->latRef, _ekf->lonRef, _ekf->hgtRef, 0.0f); // this is mostly for the initial tilt alignment.
+				_ekf->InitialiseFilter(_ekf->velNED, _ekf->latRef, _ekf->lonRef, _ekf->hgtRef, declination); // this is mostly for the initial tilt alignment.
 			}
 			tilt_margin = _ekf->ConstrainFloat(tilt_margin + 1000*_ekf->dtIMU,0,1000);
 
@@ -592,6 +597,8 @@ public:
 		gpsCourse = deg2rad*Course;
 		gpsGndSpd = GndSpd;
 		gpsVelD = velNED[2];
+		_lat = Lat;
+		_lon = Lon;
 		_ekf->gpsLat = deg2rad*Lat;
 		_ekf->gpsLon = deg2rad*Lon - M_PI;
 		_ekf->gpsHgt = Hgt;
@@ -605,6 +612,13 @@ public:
 		_ekf->gpsmagAcc = magAcc;
 		_ekf->pDOP = pDOP;
 		newDataGps = new_data;
+	}
+
+	void init_mag(float X,float Y, float Z)
+	{
+		_ekf->magData.x = X*MAG_SCALING; 
+		_ekf->magData.y = Y*MAG_SCALING;
+		_ekf->magData.z = Z*MAG_SCALING;
 	}
 
 	void setMagData(float M[3], float MB[3], bool new_data)

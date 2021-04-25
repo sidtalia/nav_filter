@@ -3824,6 +3824,7 @@ void AttPosEKF::InitializeDynamic(float (&initvelNED)[3], float declination)
     magstate.q1 = initQuat[1];
     magstate.q2 = initQuat[2];
     magstate.q3 = initQuat[3];
+    // possible place where dip/inclination angle info may play a role.
     magstate.magN = initMagNED.x;
     magstate.magE = initMagNED.y;
     magstate.magD = initMagNED.z;

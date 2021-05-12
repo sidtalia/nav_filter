@@ -659,14 +659,13 @@ public:
 		_ekf->new_AHRS_Data = true;
 	}
 
-	void setTimingData(uint32_t timeArray[5], float EAS2TAS)
+	void setTimingData(uint32_t VelDelay, uint32_t PosDelay, uint32_t HgtDelay, uint32_t MagDelay, uint32_t TasDelay)
 	{
-		msecVelDelay  = timeArray[0];
-		msecPosDelay  = timeArray[1];
-		msecHgtDelay  = timeArray[2];
-		msecMagDelay  = timeArray[3];
-		msecTasDelay  = timeArray[4];
-		_ekf->EAS2TAS = EAS2TAS;
+		msecVelDelay  = VelDelay;
+		msecPosDelay  = PosDelay;
+		msecHgtDelay  = HgtDelay;
+		msecMagDelay  = MagDelay;
+		msecTasDelay  = TasDelay;
 	}
 
 	void setFlowData(float flow[7], uint32_t flowDt,bool new_data)

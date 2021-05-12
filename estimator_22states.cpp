@@ -245,7 +245,7 @@ void AttPosEKF::InitialiseParameters()
     magMeasurementSigma = 0.5f;
     airspeedMeasurementSigma = 1.4f;
     gyroProcessNoise = 0.001f;
-    accelProcessNoise = 0.5;
+    accelProcessNoise = 0.2;
 
     gndHgtSigma  = 0.1f; // terrain gradient 1-sigma
     R_LOS = 0.3f; // optical flow measurement noise variance (rad/sec)^2

@@ -230,8 +230,8 @@ void AttPosEKF::InitialiseParameters()
 
     yawVarScale = 1.0f;
     windVelSigma = 0.1f;
-    dAngBiasSigma = 1.0e-6;
-    dVelBiasSigma = 0.0002f;
+    dAngBiasSigma = 1.0e-6; //1e-3
+    dVelBiasSigma = 0.0002f; // 0.003
     magEarthSigma = 0.0003f;
     magBodySigma  = 0.0003f;
 
@@ -244,8 +244,8 @@ void AttPosEKF::InitialiseParameters()
 
     magMeasurementSigma = 0.5f;
     airspeedMeasurementSigma = 1.4f;
-    gyroProcessNoise = 0.001f;
-    accelProcessNoise = 0.2;
+    gyroProcessNoise = 0.015f; // 0.015
+    accelProcessNoise = 0.35; // 0.35
 
     gndHgtSigma  = 0.1f; // terrain gradient 1-sigma
     R_LOS = 0.3f; // optical flow measurement noise variance (rad/sec)^2
